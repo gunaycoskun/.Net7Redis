@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NET7Redis.Cache;
 using NET7RedisAPI.Model;
 using NET7RedisAPI.Repository;
+using NET7RedisAPI.Services;
+using StackExchange.Redis;
 
 namespace NET7RedisAPI.Controllers
 {
@@ -9,27 +12,28 @@ namespace NET7RedisAPI.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IProductRepository _productRepository;
+        private readonly IProductService _productService;
 
-        public ProductController(IProductRepository productRepository)
+        public ProductController(IProductService productService)
         {
-            _productRepository = productRepository;
+            _productService = productService;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _productRepository.GetAllAsync());
+            return Ok(await _productService.GetAllAsync());
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            return Ok(await _productRepository.GetByIdAsync(id));
+            return Ok(await _productService.GetByIdAsync(id));
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(Product product)
         {
-            return Created(string.Empty, await _productRepository.CreateAsync(product));
+            return Created(string.Empty, await _productService.CreateAsync(product));
         }
     }
 }
